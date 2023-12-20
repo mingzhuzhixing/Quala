@@ -7,4 +7,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="color_264b65">#264b65</color>
+
+    <color name="color_f3492c">#f3492c</color>
+    <color name="color_faf9f7">#FAF9F7</color>
+    <color name="color_f7f5f2">#F7F5F2</color>
+    <color name="color_797979">#797979</color>
 </resources>

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Quala</string>
-    <string name="jobs_news">jobs_news</string>
+    <string name="jobs_news">Jobs_news</string>
+    <string name="friendly_reminder">Friendly Reminder:</string>
+    <string name="friendly_reminder_desc">The post was published by a user of our platform, not an official post. Please note the authenticity of the post.</string>
+    <string name="tip_text">The post was published by a user of our platform, not an official post. Please note the authenticity of the post.</string>
 </resources>

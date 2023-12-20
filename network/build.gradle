@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-//    namespace 'com.quala.network'
+    namespace 'com.quala.network'
     compileSdk 33
 
     defaultConfig {

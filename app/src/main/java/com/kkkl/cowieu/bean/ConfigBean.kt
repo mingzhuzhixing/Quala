@@ -1,4 +1,5 @@
 package com.kkkl.cowieu.bean
+
 /**
  * ClassName: ConfigBean
  * Description:
@@ -42,6 +43,7 @@ class ConfigBean {
         var addtocart_ws: AddtocartWsBean? = null
         var contact_show_popup: ContactShowPopupBean? = null
         var chat_show_dialog: ChatShowDialogBean? = null
+        var app_show_app: AppShowAppBean? = null
         var app_start_app: AppStartAppBean? = null
         var addtocart_msg: AddtocartMsgBean? = null
         var ip_repeat_24h: IpRepeat24hBean? = null
@@ -66,6 +68,10 @@ class ConfigBean {
         }
 
         class ChatShowDialogBean {
+            var code: String? = null
+        }
+
+        class AppShowAppBean {
             var code: String? = null
         }
 

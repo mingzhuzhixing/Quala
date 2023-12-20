@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.kkkl.cowieu.helper.InitHelper
 import java.lang.reflect.Method
+
 /**
  * ClassName: com.kkkl.cowieu.util.SPUtils
  * Description: 文件存储
@@ -116,8 +117,8 @@ object SPUtils {
     }
 
     @JvmStatic
-    fun getConfigJson(context: Context): String? {
-        return getString(context, KEY_CONFIG_JSON)
+    fun getConfigJson(): String? {
+        return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_CONFIG_JSON)
     }
 
     const val KEY_LIST_JSON = "list_json"
@@ -125,12 +126,12 @@ object SPUtils {
     /**
      * 工作列表数据_json
      */
-    fun setJobListJson(context: Context, value: String) {
-        put(context, KEY_LIST_JSON, value)
+    fun setJobListJson(value: String) {
+        put(InitHelper.INSTANCE.getApplicationContext(), KEY_LIST_JSON, value)
     }
 
-    fun getJobListJson(context: Context): String? {
-        return getString(context, KEY_LIST_JSON)
+    fun getJobListJson(): String? {
+        return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_LIST_JSON)
     }
 
     const val KEY_INVOKEAPP_SUC_COUNT = "invokeapp_suc_count"
@@ -155,7 +156,7 @@ object SPUtils {
         return getLong(InitHelper.INSTANCE.getApplicationContext(), KEY_INVOKEAPP_SUC_TIME)
     }
 
-    fun setFirstInvokeAppSuccessTime(value: Int) {
+    fun setFirstInvokeAppSuccessTime(value: Long) {
         put(InitHelper.INSTANCE.getApplicationContext(), KEY_INVOKEAPP_SUC_TIME, value)
     }
 
@@ -186,14 +187,13 @@ object SPUtils {
      * 是否上报过 jobs_show_ptjob
      */
     const val KEY_JOBS_SHOW_PTJOB = "jobs_show_ptjob"
-    var jobsShowPtJob: Boolean
-        get() = getBoolean(
-            InitHelper.INSTANCE.getApplicationContext(),
-            KEY_JOBS_SHOW_PTJOB
-        )
-        set(value) {
-            put(InitHelper.INSTANCE.getApplicationContext(), KEY_JOBS_SHOW_PTJOB, value)
-        }
+    fun getJobsShowPtJob(): Boolean {
+        return getBoolean(InitHelper.INSTANCE.getApplicationContext(), KEY_JOBS_SHOW_PTJOB)
+    }
+
+    fun setJobsShowPtJob(value: Boolean) {
+        put(InitHelper.INSTANCE.getApplicationContext(), KEY_JOBS_SHOW_PTJOB, value)
+    }
 
     /**
      * 是否上报过 user_event
