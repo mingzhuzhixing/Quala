@@ -1,21 +1,20 @@
-package com.kkkl.cowieu.activity
+package com.kkkl.cowieu
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.kkkl.cowieu.R
 
 /**
- * ClassName: DetailsActivity
- * Description: 详情
+ * ClassName: HomeActivity
+ * Description: 首页
  *
  * @author jxc
  * @package_name  com.kkkl.cowieu.activity
- * @date 2023/12/19 10:43
+ * @date 2023/12/19 10:41
  */
-class DetailsActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_details)
+        setContentView(R.layout.activity_main)
     }
 }
