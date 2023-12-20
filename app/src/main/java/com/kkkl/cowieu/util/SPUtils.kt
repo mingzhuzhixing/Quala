@@ -86,25 +86,20 @@ object SPUtils {
     }
 
     fun getAdjustResult(): String? {
-        val context = InitHelper.INSTANCE.getApplicationContext() ?: return ""
-        return getString(context, KEY_ADJUST_RESULT)
+        return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_ADJUST_RESULT)
     }
 
-    const val KEY_GAID = "gaid"
+    const val KEY_GAID = "key_gaid"
 
     /**
      * 获取gaid
      */
     fun setGaid(value: String) {
-        val context = InitHelper.INSTANCE.getApplicationContext()
-        if (context != null) {
-            put(context, KEY_GAID, value)
-        }
+        put(InitHelper.INSTANCE.getApplicationContext(), KEY_GAID, value)
     }
 
     fun getGaid(): String? {
-        val context = InitHelper.INSTANCE.getApplicationContext() ?: return ""
-        return getString(context, KEY_GAID)
+        return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_GAID)
     }
 
     const val KEY_CONFIG_JSON = "config_json"

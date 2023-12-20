@@ -12,15 +12,15 @@ import com.google.gson.JsonObject
 import com.kkkl.cowieu.R
 import com.kkkl.cowieu.bean.ConfigBean
 import com.kkkl.cowieu.event.LoadAdjustEvent
+import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.quala_api.QualaApi
 import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
 import com.quala.network.http.HttpObserver
+import com.quala.network.http.HttpRequest
 import com.quala.network.http.HttpRetrofit
 import com.quala.network.http.HttpSchedulers
 import kotlinx.android.synthetic.main.activity_splash.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -78,11 +78,10 @@ class SplashActivity : AppCompatActivity() {
      */
     private fun getConfigData(context: Context) {
         val json = JsonObject()
-        json.addProperty("attributes", SPUtils.getAdjustResult())
-        json.addProperty("gaid", SPUtils.getGaid())
-        val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
+        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
         HttpRetrofit.getInstance().create(QualaApi::class.java)
-            .getQualaConfig(body)
+            .getQualaConfig(HttpRequest.getRequestBody(json))
             .compose(HttpSchedulers.applySchedulers())
             .subscribe(object : HttpObserver<ConfigBean?>() {
                 override fun onSuccess(data: ConfigBean?) {

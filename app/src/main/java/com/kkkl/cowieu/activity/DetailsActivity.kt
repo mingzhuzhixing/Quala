@@ -12,6 +12,7 @@ import com.kkkl.cowieu.adapter.DetailAdapter
 import com.kkkl.cowieu.bean.ListBean
 import com.kkkl.cowieu.dialog.DetailsDialog
 import com.kkkl.cowieu.dialog.HomeDialog
+import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.util.UIUtils
 import com.quala.network.decoration.SpaceItemDecoration
@@ -27,17 +28,17 @@ import kotlinx.android.synthetic.main.activity_details.*
  */
 class DetailsActivity : AppCompatActivity() {
     private var mType: String? = null
-    private var listEntity: ListBean? = null
+    private var listBean: ListBean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         val bundle = intent.extras
-        mType = if (bundle != null) bundle.getString("type", "") else ""
-        listEntity = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            bundle?.getParcelable("json", ListBean::class.java)
+        mType = if (bundle != null) bundle.getString(Constants.EXTRA_TYPE, "") else ""
+        listBean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            bundle?.getParcelable(Constants.EXTRA_JSON, ListBean::class.java)
         } else {
-            bundle?.getParcelable("json")
+            bundle?.getParcelable(Constants.EXTRA_JSON)
         }
         initView()
         initListener()
@@ -47,7 +48,7 @@ class DetailsActivity : AppCompatActivity() {
      * 初始化
      */
     private fun initView() {
-        tv_title.text = listEntity?.title
+        tv_title.text = listBean?.title
 
         val configEntity = ParseDataHelper.getConfigJsonData()
         if (configEntity?.actions != null) {
@@ -72,7 +73,7 @@ class DetailsActivity : AppCompatActivity() {
             adapter = detailAdapter
             addItemDecoration(dividerItem)
         }
-        detailAdapter.setList(listEntity?.descriptions)
+        detailAdapter.setList(listBean?.descriptions)
     }
 
     /**
@@ -95,7 +96,7 @@ class DetailsActivity : AppCompatActivity() {
         try {
             if ("c".equals(mType, ignoreCase = true)) {
                 //显示弹框a
-                HomeDialog(this@DetailsActivity, listEntity).show()
+                HomeDialog(this@DetailsActivity, listBean).show()
             } else {
                 //显示弹框c
                 DetailsDialog(this@DetailsActivity).show()

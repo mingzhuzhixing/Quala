@@ -16,17 +16,17 @@ import com.kkkl.cowieu.adapter.HomeAdapter
 import com.kkkl.cowieu.bean.ListBean
 import com.kkkl.cowieu.event.RefreshCardDataEvent
 import com.kkkl.cowieu.event.RefreshListEvent
+import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.helper.ReportEventHelper
 import com.kkkl.cowieu.quala_api.QualaApi
 import com.kkkl.cowieu.util.SPUtils
 import com.quala.network.decoration.SpaceItemDecoration
 import com.quala.network.http.HttpObserver
+import com.quala.network.http.HttpRequest
 import com.quala.network.http.HttpRetrofit
 import com.quala.network.http.HttpSchedulers
 import kotlinx.android.synthetic.main.activity_home.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -86,11 +86,10 @@ class HomeActivity : AppCompatActivity() {
      */
     private fun requestListData() {
         val json = JsonObject()
-        json.addProperty("attributes", SPUtils.getAdjustResult())
-        json.addProperty("gaid", SPUtils.getGaid())
-        val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
+        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
         HttpRetrofit.getInstance().create(QualaApi::class.java)
-            .getQualaJobList(body)
+            .getQualaJobList(HttpRequest.getRequestBody(json))
             .compose(HttpSchedulers.applySchedulers())
             .subscribe(object : HttpObserver<List<ListBean?>>() {
                 override fun onSuccess(data: List<ListBean?>) {
@@ -98,8 +97,7 @@ class HomeActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     SPUtils.setJobListJson(Gson().toJson(data))
                     mAdapter?.setList(data)
-                    //todo
-                    //AdjustEventReport.reportJobsShow(data)
+                    ReportEventHelper.reportJobsShow(data)
                 }
             })
     }
@@ -114,16 +112,16 @@ class HomeActivity : AppCompatActivity() {
             if (isDestroyed) {
                 return
             }
-            val listEntities: MutableList<ListBean> = ParseDataHelper.getListJsonData()
-            val iterator: MutableIterator<ListBean> = listEntities.iterator()
+            val listBeans = ParseDataHelper.getListJsonData()
+            val iterator: MutableIterator<ListBean> = listBeans.iterator()
             while (iterator.hasNext()) {
                 val bean: ListBean = iterator.next()
                 if ("c".equals(bean.type, ignoreCase = true)) {
                     iterator.remove()
                 }
             }
-            SPUtils.setJobListJson(Gson().toJson(listEntities))
-            mAdapter?.setList(listEntities)
+            SPUtils.setJobListJson(Gson().toJson(listBeans))
+            mAdapter?.setList(listBeans)
         } catch (e: Exception) {
             e.printStackTrace()
         }

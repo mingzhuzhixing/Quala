@@ -3,7 +3,6 @@ package com.kkkl.cowieu.dialog
 import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
@@ -14,6 +13,7 @@ import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.helper.InvokeAppHelper
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.helper.ReportEventHelper
+import com.kkkl.cowieu.util.UIUtils
 import kotlinx.android.synthetic.main.dialog_home_layout.*
 
 /**
@@ -38,7 +38,7 @@ class HomeDialog(val activity: Activity, val listBean: ListBean?) :
         }
 
         tv_button.setOnClickListener {
-            InvokeAppHelper.invokeAppStart(activity, listBean)
+            InvokeAppHelper.invokeAppOpen(activity, listBean)
             dismiss()
         }
     }
@@ -50,17 +50,13 @@ class HomeDialog(val activity: Activity, val listBean: ListBean?) :
         val configEntity = ParseDataHelper.getConfigJsonData()
         if (configEntity != null) {
             //当rtl为true时，支持文案展示从右往左展示
-            if (configEntity.rtl) {
-                tv_a_1.textDirection = View.TEXT_DIRECTION_RTL
-                tv_a_2.textDirection = View.TEXT_DIRECTION_RTL
-                tv_a_3.textDirection = View.TEXT_DIRECTION_RTL
-                tv_tip_text.textDirection = View.TEXT_DIRECTION_RTL
-            } else {
-                tv_a_1.textDirection = View.TEXT_DIRECTION_LTR
-                tv_a_2.textDirection = View.TEXT_DIRECTION_LTR
-                tv_a_3.textDirection = View.TEXT_DIRECTION_LTR
-                tv_tip_text.textDirection = View.TEXT_DIRECTION_LTR
-            }
+            UIUtils.setTextDirection(
+                configEntity.rtl,
+                tv_a_1,
+                tv_a_2,
+                tv_a_3,
+                tv_tip_text
+            )
             if (configEntity.contact?.contents?.isNotEmpty() == true) {
                 tv_a_1.visibility = View.GONE
                 tv_a_2.visibility = View.GONE
@@ -87,7 +83,7 @@ class HomeDialog(val activity: Activity, val listBean: ListBean?) :
             }
 
             //按钮文案
-            if (!TextUtils.isEmpty(configEntity.chatScript?.actions?.contact)) {
+            if (!configEntity.chatScript?.actions?.contact.isNullOrEmpty()) {
                 tv_button.text = configEntity.chatScript?.actions?.contact
             }
         }

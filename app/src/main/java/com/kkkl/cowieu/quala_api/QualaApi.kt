@@ -10,12 +10,12 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 /**
- * ClassName: com.kkkl.cowieu.api.TitanfastApi
+ * ClassName: com.kkkl.cowieu.quala_api.QualaApi
  * Description: 网络需要的 api
  *
  * @author jiaxiaochen
- * @package_name com.kkkl.cowieu.api
- * @date 2023/12/12 23:35
+ * @package_name com.kkkl.cowieu.quala_api
+ * @date 2023/12/20 23:35
  */
 interface QualaApi {
     /**

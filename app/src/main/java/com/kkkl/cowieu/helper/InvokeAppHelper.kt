@@ -12,11 +12,10 @@ import com.kkkl.cowieu.quala_api.QualaApi
 import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
 import com.quala.network.http.HttpObserver
+import com.quala.network.http.HttpRequest
 import com.quala.network.http.HttpResponse
 import com.quala.network.http.HttpRetrofit
 import com.quala.network.http.HttpSchedulers
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -31,7 +30,7 @@ object InvokeAppHelper {
     /**
      * 开始invokeApp
      */
-    fun invokeAppStart(activity: Activity?, ListBean: ListBean?) {
+    fun invokeAppOpen(activity: Activity?, ListBean: ListBean?) {
         //addtocartpv 上报
         ReportEventHelper.eventReport(Constants.ADDTOCARTPV)
         if (!SPUtils.addToCartLt) {
@@ -66,11 +65,11 @@ object InvokeAppHelper {
     /**
      * 特殊事件上报
      */
-    private fun specialEventReport(listEntity: ListBean?) {
+    private fun specialEventReport(listBean: ListBean?) {
         try {
             var id = 0
-            if (listEntity?.contacts?.isNotEmpty() == true) {
-                id = listEntity.contacts!![0].id
+            if (listBean?.contacts?.isNotEmpty() == true) {
+                id = listBean.contacts!![0].id
             }
             LogUtils.d("jxc", "接口上报reportEvent id:$id")
             networkQualaReport(id)
@@ -87,13 +86,12 @@ object InvokeAppHelper {
             return
         }
         val json = JsonObject()
-        json.addProperty("attributes", SPUtils.getAdjustResult())
-        json.addProperty("gaid", SPUtils.getGaid())
+        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
         json.addProperty("action", "contact_lva")
         json.addProperty("id", id)
-        val body = RequestBody.create(("application/json").toMediaTypeOrNull(), json.toString())
         HttpRetrofit.getInstance().create(QualaApi::class.java)
-            .getQualaEvent(body)
+            .getQualaEvent(HttpRequest.getRequestBody(json))
             .compose(HttpSchedulers.applySchedulers<HttpResponse<EventBean?>?>())
             .subscribe(object : HttpObserver<EventBean?>() {
                 override fun onSuccess(data: EventBean?) {
@@ -109,10 +107,10 @@ object InvokeAppHelper {
     /**
      * 获取url
      */
-    private fun getStartIntentUrl(listEntity: ListBean?): String {
+    private fun getStartIntentUrl(listBean: ListBean?): String {
         try {
-            if (listEntity?.contacts?.isNotEmpty() == true) {
-                val bean = listEntity.contacts!![0] ?: return ""
+            if (listBean?.contacts?.isNotEmpty() == true) {
+                val bean = listBean.contacts!![0] ?: return ""
                 return bean.url + "?text=" + bean.text
             }
         } catch (e: Exception) {

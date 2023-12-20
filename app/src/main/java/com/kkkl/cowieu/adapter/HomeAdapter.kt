@@ -13,6 +13,7 @@ import com.kkkl.cowieu.activity.DetailsActivity
 import com.kkkl.cowieu.bean.ConfigBean
 import com.kkkl.cowieu.bean.ListBean
 import com.kkkl.cowieu.dialog.HomeDialog
+import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.helper.InvokeAppHelper
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.util.UIUtils
@@ -51,30 +52,24 @@ class HomeAdapter(val mActivity: Activity) :
 
         setTextDirection(holder)
 
-        holder.setOnClickListener(R.id.ll_root_layout, object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                openDetailPage(item)
-            }
-        })
+        holder.setOnClickListener(R.id.ll_root_layout) { openDetailPage(item) }
 
-        holder.setOnClickListener(R.id.tv_button, object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                try {
-                    if ("a" == item.type) {
-                        openDetailPage(item)
+        holder.setOnClickListener(R.id.tv_button) {
+            try {
+                if ("a" == item.type) {
+                    openDetailPage(item)
+                } else {
+                    //c类卡片
+                    if (configBean?.contacts?.showContact == true) {
+                        HomeDialog(mActivity, item).show()
                     } else {
-                        //c类卡片
-                        if (configBean != null && configBean!!.contacts != null && configBean!!.contacts!!.showContact) {
-                            HomeDialog(mActivity, item).show()
-                        } else {
-                            InvokeAppHelper.invokeAppStart(mActivity, item)
-                        }
+                        InvokeAppHelper.invokeAppOpen(mActivity, item)
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        })
+        }
     }
 
     /**
@@ -118,8 +113,8 @@ class HomeAdapter(val mActivity: Activity) :
             }
             val intent = Intent(context, DetailsActivity::class.java)
             val bundle = Bundle()
-            bundle.putParcelable("json", bean)
-            bundle.putString("type", bean.type)
+            bundle.putParcelable(Constants.EXTRA_JSON, bean)
+            bundle.putString(Constants.EXTRA_TYPE, bean.type)
             intent.putExtras(bundle)
             context.startActivity(intent)
         } catch (e: java.lang.Exception) {

@@ -20,7 +20,6 @@ object ParseDataHelper {
      * 获取config_json解析成对象数据
      */
     fun getConfigJsonData(): ConfigBean? {
-        val context = InitHelper.INSTANCE.getApplicationContext() ?: return null
         val configJson = SPUtils.getConfigJson()
         return if (!configJson.isNullOrEmpty()) {
             Gson().fromJson(configJson, object : TypeToken<ConfigBean?>() {}.type)

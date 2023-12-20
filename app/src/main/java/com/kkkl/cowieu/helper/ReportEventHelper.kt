@@ -4,9 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
-import com.kkkl.cowieu.bean.ConfigBean
 import com.kkkl.cowieu.bean.ListBean
-import com.kkkl.cowieu.helper.Constants.*
 import com.kkkl.cowieu.helper.ParseDataHelper.getConfigJsonData
 import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
@@ -51,32 +49,24 @@ object ReportEventHelper {
      * @return 获取归因值
      */
     private fun getAdjustReportCode(key: String): String {
-        val configEntity = getConfigJsonData() ?: return ""
-        val adjustEntity = configEntity.report!!.adjust
-        if (TextUtils.isEmpty(key) || adjustEntity == null) {
+        val adjustBean = getConfigJsonData()?.report?.adjust
+        if (TextUtils.isEmpty(key) || adjustBean == null) {
             return ""
         }
-        if (APP_SHOW_APP == key) {
-            return if (adjustEntity.app_show_app == null) "" else adjustEntity.app_show_app?.code
-                ?: ""
-        } else if (ADDTOCARTLT == key) {
-            return if (adjustEntity.addtocartlt == null) "" else adjustEntity.addtocartlt?.code
-                ?: ""
-        } else if (ADDTOCARTPV == key) {
-            return if (adjustEntity.addtocartpv == null) "" else adjustEntity.addtocartpv?.code
-                ?: ""
-        } else if (ADDTOCART_WS == key) {
-            return if (adjustEntity.addtocart_ws == null) "" else adjustEntity.addtocart_ws?.code
-                ?: ""
-        } else if (JOBS_SHOW_CARD == key) {
-            return if (adjustEntity.jobs_show_card == null) "" else adjustEntity.jobs_show_card?.code
-                ?: ""
-        } else if (JOBS_SHOW_PTJOB == key) {
-            return if (adjustEntity.jobs_show_ptjob == null) "" else adjustEntity.jobs_show_ptjob?.code
-                ?: ""
-        } else if (CONTACT_SHOW_POPUP == key) {
-            return if (adjustEntity.contact_show_popup == null) "" else adjustEntity.contact_show_popup?.code
-                ?: ""
+        if (Constants.APP_SHOW_APP == key) {
+            return adjustBean.app_show_app?.code ?: ""
+        } else if (Constants.ADDTOCARTLT == key) {
+            return adjustBean.addtocartlt?.code ?: ""
+        } else if (Constants.ADDTOCARTPV == key) {
+            return adjustBean.addtocartpv?.code ?: ""
+        } else if (Constants.ADDTOCART_WS == key) {
+            return adjustBean.addtocart_ws?.code ?: ""
+        } else if (Constants.JOBS_SHOW_CARD == key) {
+            return adjustBean.jobs_show_card?.code ?: ""
+        } else if (Constants.JOBS_SHOW_PTJOB == key) {
+            return adjustBean.jobs_show_ptjob?.code ?: ""
+        } else if (Constants.CONTACT_SHOW_POPUP == key) {
+            return adjustBean.contact_show_popup?.code ?: ""
         }
         return ""
     }
@@ -84,14 +74,14 @@ object ReportEventHelper {
     /**
      * 上班job显示事件
      */
-    fun reportJobsShow(listEntities: List<ListBean?>) {
+    fun reportJobsShow(listBeans: List<ListBean?>) {
         //上报
-        if (listEntities.isNotEmpty()) {
-            eventReport(JOBS_SHOW_CARD)
+        if (listBeans.isNotEmpty()) {
+            eventReport(Constants.JOBS_SHOW_CARD)
             if (!SPUtils.getJobsShowPtJob()) {
-                for (bean in listEntities) {
+                for (bean in listBeans) {
                     if ("c" == bean?.type) {
-                        eventReport(JOBS_SHOW_PTJOB)
+                        eventReport(Constants.JOBS_SHOW_PTJOB)
                         SPUtils.setJobsShowPtJob(true)
                         break
                     }
@@ -106,14 +96,14 @@ object ReportEventHelper {
      * 上报 showApp
      */
     fun reportShowApp(context: Context?) {
-        val entity: ConfigBean = getConfigJsonData() ?: return
-        val adjust = entity.report?.adjust
+        val bean = getConfigJsonData()
+        val adjust = bean?.report?.adjust
         if (adjust?.app_show_app != null) {
-            eventReport(APP_SHOW_APP, adjust.app_show_app?.code)
+            eventReport(Constants.APP_SHOW_APP, adjust.app_show_app?.code)
             LogUtils.v("jxc", "startMainActivity() 开启主页面 上报app_start_app 获取的")
         } else {
             LogUtils.v("jxc", "startMainActivity() 开启主页面 上报app_start_app 写死的")
-            eventReport(APP_SHOW_APP, APP_SHOW_APP_CODE)
+            eventReport(Constants.APP_SHOW_APP, APP_SHOW_APP_CODE)
         }
     }
 }
