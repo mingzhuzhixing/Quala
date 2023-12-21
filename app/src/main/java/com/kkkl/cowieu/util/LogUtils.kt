@@ -14,41 +14,41 @@ import com.kkkl.cowieu.BuildConfig
 object LogUtils {
     private const val TAG = "jxc"
     fun i(message: String?) {
-        Log.i(TAG, message!!)
+        i(TAG, message)
     }
 
     fun i(tag: String?, message: String?) {
         if (BuildConfig.DEBUG) {
-            Log.i(tag, message!!)
+            Log.i(tag, message ?: "")
         }
     }
 
     fun d(message: String?) {
-        Log.d(TAG, message!!)
+        d(TAG, message)
     }
 
     fun d(tag: String?, message: String?) {
         if (BuildConfig.DEBUG) {
-            Log.d(tag, message!!)
+            Log.d(tag, message ?: "")
         }
     }
 
     fun w(message: String?) {
-        Log.w(TAG, message!!)
+        w(TAG, message)
     }
 
     fun w(tag: String?, message: String?) {
         if (BuildConfig.DEBUG) {
-            Log.w(tag, message!!)
+            Log.w(tag, message ?: "")
         }
     }
 
     fun e(message: String?) {
-        Log.e(TAG, message!!)
+        e(TAG, message)
     }
 
     fun e(tag: String?, message: String?) {
-        Log.e(tag, message, null)
+        e(tag, message, null)
     }
 
     fun e(tag: String?, message: String?, throwable: Throwable?) {
@@ -58,11 +58,11 @@ object LogUtils {
     }
 
     fun v(message: String?) {
-        Log.e(TAG, message!!)
+        v(TAG, message)
     }
 
     fun v(tag: String?, message: String?) {
-        Log.v(tag, message, null)
+        v(tag, message, null)
     }
 
     fun v(tag: String?, message: String?, throwable: Throwable?) {

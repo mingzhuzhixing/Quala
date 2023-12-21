@@ -25,12 +25,17 @@
         </activity>
         <activity
             android:name=".activity.HomeActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:launchMode="singleTask" />
+
         <activity
             android:name=".activity.DetailsActivity"
             android:exported="false" />
 
-        <service android:name=".service.CountDownService"/>
+        <service
+            android:name=".service.CountDownService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>
