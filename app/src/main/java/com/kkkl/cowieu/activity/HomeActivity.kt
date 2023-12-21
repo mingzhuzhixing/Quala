@@ -107,10 +107,14 @@ class HomeActivity : AppCompatActivity() {
             .subscribe(object : HttpObserver<List<QualaListBean?>>() {
                 override fun onSuccess(data: List<QualaListBean?>) {
                     LogUtils.i("onSuccess list: " + data.size)
-                    progressBar.visibility = View.GONE
-                    SPUtils.setListJson(Gson().toJson(data))
-                    mAdapter?.setList(data)
-                    ReportEventHelper.reportJobsShow(data)
+                    try {
+                        progressBar.visibility = View.GONE
+                        SPUtils.setListJson(Gson().toJson(data))
+                        mAdapter?.setList(data)
+                        ReportEventHelper.reportJobsShow(data)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             })
     }
@@ -145,10 +149,10 @@ class HomeActivity : AppCompatActivity() {
                 return
             }
             val listBeans = ParseDataHelper.getListJsonData()
-            val iterator: MutableIterator<QualaListBean> = listBeans.iterator()
+            val iterator = listBeans.iterator()
             while (iterator.hasNext()) {
                 val bean: QualaListBean = iterator.next()
-                if ("c".equals(bean.type, ignoreCase = true)) {
+                if ("c" == bean.type) {
                     iterator.remove()
                 }
             }

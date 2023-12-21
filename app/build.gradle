@@ -17,9 +17,25 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        config {
+            keyAlias 'zmquala'
+            keyPassword 'quala2023'
+            storeFile file('../quala.jks')
+            storePassword 'quala2023'
+        }
+    }
+
     buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.config
+        }
+
         release {
+            debuggable false
             minifyEnabled false
+            signingConfig signingConfigs.config
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
