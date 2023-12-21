@@ -12,7 +12,7 @@ import com.kkkl.cowieu.BuildConfig
  * @date 2023/12/20 12:47
  */
 object LogUtils {
-    private const val TAG = "LogUtil"
+    private const val TAG = "jxc"
     fun i(message: String?) {
         Log.i(TAG, message!!)
     }
@@ -55,6 +55,10 @@ object LogUtils {
         if (BuildConfig.DEBUG) {
             Log.e(tag, message, throwable)
         }
+    }
+
+    fun v(message: String?) {
+        Log.e(TAG, message!!)
     }
 
     fun v(tag: String?, message: String?) {

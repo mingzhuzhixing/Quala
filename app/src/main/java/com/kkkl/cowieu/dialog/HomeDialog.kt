@@ -8,8 +8,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import com.kkkl.cowieu.R
-import com.kkkl.cowieu.bean.ListBean
-import com.kkkl.cowieu.helper.Constants
+import com.kkkl.cowieu.bean.QualaListBean
+import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.helper.InvokeAppHelper
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.helper.ReportEventHelper
@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.dialog_home_layout.*
  * @package_name com.kkkl.cowieu.dialog
  * @date 2023/12/20 09:51
  */
-class HomeDialog(val activity: Activity, val listBean: ListBean?) :
+class HomeDialog(val activity: Activity, val qualaListBean: QualaListBean?) :
     Dialog(activity, R.style.Dialog_Style) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class HomeDialog(val activity: Activity, val listBean: ListBean?) :
         }
 
         tv_button.setOnClickListener {
-            InvokeAppHelper.invokeAppOpen(activity, listBean)
+            InvokeAppHelper.invokeAppOpen(activity, qualaListBean)
             dismiss()
         }
     }
@@ -95,7 +95,7 @@ class HomeDialog(val activity: Activity, val listBean: ListBean?) :
 
     override fun show() {
         super.show()
-        ReportEventHelper.eventReport(Constants.CONTACT_SHOW_POPUP)
+        ReportEventHelper.eventReport(QualaConstants.CONTACT_SHOW_POPUP)
     }
 
     /**

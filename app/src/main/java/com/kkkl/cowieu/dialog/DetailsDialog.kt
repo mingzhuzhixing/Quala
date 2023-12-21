@@ -17,8 +17,6 @@ import kotlinx.android.synthetic.main.dialog_details_layout.tv_c_content
  * ClassName: com.kkkl.cowieu.dialog.DetailsDialog
  * Description: 详情页弹框
  *
- * (mActivity, R.style.Dialog_Style)
- *
  * @author jiaxiaochen
  * @package_name com.kkkl.cowieu.dialog
  * @date 2023/12/20 09:48
@@ -41,24 +39,24 @@ class DetailsDialog(context: Context) : Dialog(context, R.style.Dialog_Style) {
     }
 
     private fun initData() {
-        val configBean = ParseDataHelper.getConfigJsonData()
-        if (configBean != null) {
+        val configInfo = ParseDataHelper.getConfigJsonData()
+        if (configInfo != null) {
             //当rtl为true时，支持文案展示从右往左展示
-            if (configBean.rtl) {
+            if (configInfo.rtl) {
                 tv_c_content.textDirection = View.TEXT_DIRECTION_RTL
             } else {
                 tv_c_content.textDirection = View.TEXT_DIRECTION_LTR
             }
-            if (configBean.tips?.contents?.isNotEmpty() == true) {
-                val s = configBean.tips?.contents!![0]
+            if (configInfo.tips?.contents?.isNotEmpty() == true) {
+                val s = configInfo.tips?.contents!![0]
                 if (!TextUtils.isEmpty(s)) {
                     tv_c_content.text = s
                 }
             }
 
             //按钮文案
-            if (configBean.tips?.confirm?.install?.isNotEmpty() == true) {
-                tv_button.text = configBean.tips?.confirm?.install
+            if (configInfo.tips?.confirm?.install?.isNotEmpty() == true) {
+                tv_button.text = configInfo.tips?.confirm?.install
             }
         }
     }

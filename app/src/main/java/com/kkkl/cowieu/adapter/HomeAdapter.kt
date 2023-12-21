@@ -10,10 +10,10 @@ import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.kkkl.cowieu.R
 import com.kkkl.cowieu.activity.DetailsActivity
-import com.kkkl.cowieu.bean.ConfigBean
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaConfigBean
+import com.kkkl.cowieu.bean.QualaListBean
 import com.kkkl.cowieu.dialog.HomeDialog
-import com.kkkl.cowieu.helper.Constants
+import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.helper.InvokeAppHelper
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.util.UIUtils
@@ -28,14 +28,14 @@ import com.kkkl.cowieu.util.UIUtils
  */
 @SuppressLint("RtlHardcoded")
 class HomeAdapter(val mActivity: Activity) :
-    BaseQuickAdapter<ListBean?, MyBaseViewHolder>(R.layout.item_home, null) {
-    var configBean: ConfigBean? = null
+    BaseQuickAdapter<QualaListBean?, MyBaseViewHolder>(R.layout.item_home, null) {
+    var qualaConfigBean: QualaConfigBean? = null
 
     init {
-        configBean = ParseDataHelper.getConfigJsonData()
+        qualaConfigBean = ParseDataHelper.getConfigJsonData()
     }
 
-    override fun convert(holder: MyBaseViewHolder, item: ListBean?) {
+    override fun convert(holder: MyBaseViewHolder, item: QualaListBean?) {
         if (item == null) {
             return
         }
@@ -59,8 +59,8 @@ class HomeAdapter(val mActivity: Activity) :
                 if ("a" == item.type) {
                     openDetailPage(item)
                 } else {
-                    //c类卡片
-                    if (configBean?.contacts?.showContact == true) {
+                    // c类卡片
+                    if (qualaConfigBean?.contacts?.showContact == true) {
                         HomeDialog(mActivity, item).show()
                     } else {
                         InvokeAppHelper.invokeAppOpen(mActivity, item)
@@ -76,12 +76,12 @@ class HomeAdapter(val mActivity: Activity) :
      * 设置文字的方向
      */
     private fun setTextDirection(holder: MyBaseViewHolder) {
-        if (configBean != null) {
-            if (configBean?.actions != null) {
-                holder.setText(R.id.tv_button, configBean?.actions?.apply ?: "")
+        if (qualaConfigBean != null) {
+            if (qualaConfigBean?.actions != null) {
+                holder.setText(R.id.tv_button, qualaConfigBean?.actions?.apply ?: "")
             }
             //当rtl为true时，支持文案展示从右往左展示
-            if (configBean?.rtl == true) {
+            if (qualaConfigBean?.rtl == true) {
                 holder.setGravity(R.id.ll_tag, Gravity.RIGHT)
                 holder.setGravity(R.id.ll_special, Gravity.RIGHT)
                 UIUtils.setTextDirection(
@@ -106,18 +106,18 @@ class HomeAdapter(val mActivity: Activity) :
     /**
      * 打开详情页
      */
-    private fun openDetailPage(bean: ListBean?) {
+    private fun openDetailPage(bean: QualaListBean?) {
         try {
             if (bean == null) {
                 return
             }
             val intent = Intent(context, DetailsActivity::class.java)
             val bundle = Bundle()
-            bundle.putParcelable(Constants.EXTRA_JSON, bean)
-            bundle.putString(Constants.EXTRA_TYPE, bean.type)
+            bundle.putParcelable(QualaConstants.EXTRA_JSON, bean)
+            bundle.putString(QualaConstants.EXTRA_TYPE, bean.type)
             intent.putExtras(bundle)
             context.startActivity(intent)
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

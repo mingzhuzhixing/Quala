@@ -9,7 +9,7 @@ import java.lang.reflect.Method
  * ClassName: com.kkkl.cowieu.util.SPUtils
  * Description: 文件存储
  *
- * @author jxc
+ * @author jiaxiaochen
  * @package_name com.kkkl.cowieu.util
  * @date 2023/12/20 12:15
  */
@@ -20,7 +20,7 @@ object SPUtils {
     const val FILE_NAME = "quala_data"
 
     /**
-     * 保存数据的方法，我们需要拿到保存数据的具体类型，然后根据类型调用不同的保存方法
+     * 保存数据的方法
      */
     fun put(context: Context?, key: String?, value: Any) {
         if (context == null) {
@@ -42,6 +42,41 @@ object SPUtils {
             editor.putString(key, value.toString())
         }
         SharedPreferencesCompat.apply(editor)
+    }
+
+    /**
+     * 创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
+     */
+    private object SharedPreferencesCompat {
+        private val sApplyMethod = findApplyMethod()
+
+        /**
+         * 反射查找apply的方法
+         */
+        private fun findApplyMethod(): Method? {
+            try {
+                val clz: Class<*> = SharedPreferences.Editor::class.java
+                return clz.getMethod("apply")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+        /**
+         * 如果找到则使用apply执行，否则使用commit
+         */
+        fun apply(editor: SharedPreferences.Editor) {
+            try {
+                if (sApplyMethod != null) {
+                    sApplyMethod.invoke(editor)
+                    return
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            editor.commit()
+        }
     }
 
     fun getString(context: Context?, key: String?): String? {
@@ -111,7 +146,6 @@ object SPUtils {
         put(context, KEY_CONFIG_JSON, value)
     }
 
-    @JvmStatic
     fun getConfigJson(): String? {
         return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_CONFIG_JSON)
     }
@@ -119,13 +153,13 @@ object SPUtils {
     const val KEY_LIST_JSON = "list_json"
 
     /**
-     * 工作列表数据_json
+     * 列表数据_json
      */
-    fun setJobListJson(value: String) {
+    fun setListJson(value: String) {
         put(InitHelper.INSTANCE.getApplicationContext(), KEY_LIST_JSON, value)
     }
 
-    fun getJobListJson(): String? {
+    fun getListJson(): String? {
         return getString(InitHelper.INSTANCE.getApplicationContext(), KEY_LIST_JSON)
     }
 
@@ -164,19 +198,9 @@ object SPUtils {
      * 记录 用户首次打开APP，满24小时，用户不再展示任何C类卡片的内容
      * 毫秒
      */
-    fun getFirstOpenAppTime(value: Int) {
+    fun setFirstOpenAppTime(value: Long) {
         put(InitHelper.INSTANCE.getApplicationContext(), KEY_FIRST_OPEN_TIME, value)
     }
-
-    /**
-     * 是否上报过 addtocartlt
-     */
-    const val KEY_ADDTOCARTLT = "addtocartlt"
-    var addToCartLt: Boolean
-        get() = getBoolean(InitHelper.INSTANCE.getApplicationContext(), KEY_ADDTOCARTLT)
-        set(value) {
-            put(InitHelper.INSTANCE.getApplicationContext(), KEY_ADDTOCARTLT, value)
-        }
 
     /**
      * 是否上报过 jobs_show_ptjob
@@ -201,75 +225,12 @@ object SPUtils {
         }
 
     /**
-     * 移除某个key值已经对应的值
+     * 是否上报过 addtocartlt
      */
-    fun remove(context: Context, key: String?) {
-        val sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
-        val editor = sp.edit()
-        editor.remove(key)
-        SharedPreferencesCompat.apply(editor)
-    }
-
-    /**
-     * 清除所有数据
-     */
-    fun clear(context: Context) {
-        val sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
-        val editor = sp.edit()
-        editor.clear()
-        SharedPreferencesCompat.apply(editor)
-    }
-
-    /**
-     * 查询某个key是否已经存在
-     */
-    fun contains(context: Context, key: String?): Boolean {
-        val sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
-        return sp.contains(key)
-    }
-
-    /**
-     * 返回所有的键值对
-     */
-    fun getAll(context: Context): Map<String, *> {
-        val sp = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
-        return sp.all
-    }
-
-    /**
-     * 创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
-     */
-    private object SharedPreferencesCompat {
-        private val sApplyMethod = findApplyMethod()
-
-        /**
-         * 反射查找apply的方法
-         */
-        private fun findApplyMethod(): Method? {
-            try {
-                val clz: Class<*> = SharedPreferences.Editor::class.java
-                return clz.getMethod("apply")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return null
+    const val KEY_ADDTOCARTLT = "addtocartlt"
+    var addToCartLt: Boolean
+        get() = getBoolean(InitHelper.INSTANCE.getApplicationContext(), KEY_ADDTOCARTLT)
+        set(value) {
+            put(InitHelper.INSTANCE.getApplicationContext(), KEY_ADDTOCARTLT, value)
         }
-
-        /**
-         * 如果找到则使用apply执行，否则使用commit
-         *
-         * @param editor
-         */
-        fun apply(editor: SharedPreferences.Editor) {
-            try {
-                if (sApplyMethod != null) {
-                    sApplyMethod.invoke(editor)
-                    return
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            editor.commit()
-        }
-    }
 }

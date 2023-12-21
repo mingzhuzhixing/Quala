@@ -18,15 +18,15 @@ import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 
 /**
- * ClassName: HomeActivity
+ * ClassName: InitHelper
  * Description: 初始化管理类
  *
- * @author jxc
+ * @author jiaxiaochen
  * @package_name  com.kkkl.cowieu.helper
  * @date 2023/12/19 10:45
  */
 class InitHelper {
-    //归因设备 token值
+    //归因token值
     private val APP_TOKEN = "ebym7gif7474"
 
     companion object {
@@ -58,12 +58,12 @@ class InitHelper {
     @SuppressLint("CheckResult")
     private fun initData(context: Context) {
         Observable.zip<String, String, String>(getGaid(context), getAdjustCode(context)) { s, s2 ->
-            LogUtils.i("jxc", "apply>> s:$s s2:$s2")
+            LogUtils.i("apply>> s:$s s2:$s2")
             "success"
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
-                LogUtils.i("jxc", "最终设备id>>$o")
+                LogUtils.i("最终设备id>>$o")
                 EventBus.getDefault().post(LoadAdjustEvent(1))
             }
     }
@@ -81,11 +81,11 @@ class InitHelper {
                 try {
                     val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
                     val gaid = adInfo.id
-                    LogUtils.i("jxc", "gaid:$gaid")
+                    LogUtils.i("gaid:$gaid")
                     SPUtils.setGaid(gaid ?: "")
                     emitter.onNext(gaid!!)
                 } catch (e: Exception) {
-                    LogUtils.e("jxc", "Error occurred when trying to get GAID.", e)
+                    e.printStackTrace()
                 }
             }.start()
         }
@@ -106,15 +106,15 @@ class InitHelper {
             }
             val config = AdjustConfig(context, APP_TOKEN, environment)
             config.setOnEventTrackingSucceededListener { eventSuccessResponseData ->
-                LogUtils.e("jxc", "归因 事件上报成功：$eventSuccessResponseData")
+                LogUtils.e("归因 事件上报成功：$eventSuccessResponseData")
             }
             config.setOnEventTrackingFailedListener { eventFailureResponseData ->
-                LogUtils.e("jxc", "归因 事件上报失败：$eventFailureResponseData")
+                LogUtils.e("归因 事件上报失败：$eventFailureResponseData")
             }
             config.setSendInBackground(true)
             config.setLogLevel(LogLevel.INFO)
             config.setOnAttributionChangedListener { attribution ->
-                LogUtils.i("jxc", "onAttributionChanged: $attribution")
+                LogUtils.i("onAttributionChanged: $attribution")
                 SPUtils.setAdjustResult(context, attribution.toString())
                 emitter.onNext(attribution.toString())
             }

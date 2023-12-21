@@ -29,6 +29,8 @@
         <activity
             android:name=".activity.DetailsActivity"
             android:exported="false" />
+
+        <service android:name=".service.CountDownService"/>
     </application>
 
 </manifest>

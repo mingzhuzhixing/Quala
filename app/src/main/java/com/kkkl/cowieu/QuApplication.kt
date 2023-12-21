@@ -7,10 +7,10 @@ import com.adjust.sdk.Adjust
 import com.kkkl.cowieu.helper.InitHelper
 
 /**
- * ClassName: DetailsActivity
- * Description: 详情
+ * ClassName: QuApplication
+ * Description: 主application
  *
- * @author jxc
+ * @author jiaxiaochen
  * @package_name  com.kkkl.cowieu
  * @date 2023/12/19 10:43
  */

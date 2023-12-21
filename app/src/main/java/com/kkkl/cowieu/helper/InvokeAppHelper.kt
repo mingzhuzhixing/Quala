@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import com.google.gson.JsonObject
-import com.kkkl.cowieu.bean.EventBean
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaEventBean
+import com.kkkl.cowieu.bean.QualaListBean
+import com.kkkl.cowieu.event.InvokeAppStartTimeEvent
 import com.kkkl.cowieu.event.RefreshCardDataEvent
 import com.kkkl.cowieu.event.RefreshListEvent
 import com.kkkl.cowieu.quala_api.QualaApi
@@ -30,18 +31,18 @@ object InvokeAppHelper {
     /**
      * 开始invokeApp
      */
-    fun invokeAppOpen(activity: Activity?, ListBean: ListBean?) {
+    fun invokeAppOpen(activity: Activity?, QualaListBean: QualaListBean?) {
         //addtocartpv 上报
-        ReportEventHelper.eventReport(Constants.ADDTOCARTPV)
+        ReportEventHelper.eventReport(QualaConstants.ADDTOCARTPV)
         if (!SPUtils.addToCartLt) {
             //addtocartlt 上报
-            ReportEventHelper.eventReport(Constants.ADDTOCARTLT)
+            ReportEventHelper.eventReport(QualaConstants.ADDTOCARTLT)
             SPUtils.addToCartLt = true
         }
 
         //接口上报
-        specialEventReport(ListBean)
-        val path = getStartIntentUrl(ListBean)
+        specialEventReport(QualaListBean)
+        val path = getStartIntentUrl(QualaListBean)
         try {
             if (activity == null) {
                 return
@@ -51,12 +52,12 @@ object InvokeAppHelper {
             intent.data = Uri.parse(path)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
-            LogUtils.d("jxc", "invokeApp whatsapp：$intent")
+            LogUtils.d("invokeApp whatsapp：$intent")
             setInvokeAppCount()
             setFirstInvokeAppTime()
 
             //addtocart_ws 上报
-            ReportEventHelper.eventReport(Constants.ADDTOCART_WS)
+            ReportEventHelper.eventReport(QualaConstants.ADDTOCART_WS)
         } catch (e: Exception) {
             startIntentUrl(activity, path)
         }
@@ -65,13 +66,13 @@ object InvokeAppHelper {
     /**
      * 特殊事件上报
      */
-    private fun specialEventReport(listBean: ListBean?) {
+    private fun specialEventReport(qualaListBean: QualaListBean?) {
         try {
             var id = 0
-            if (listBean?.contacts?.isNotEmpty() == true) {
-                id = listBean.contacts!![0].id
+            if (qualaListBean?.contacts?.isNotEmpty() == true) {
+                id = qualaListBean.contacts!![0].id
             }
-            LogUtils.d("jxc", "接口上报reportEvent id:$id")
+            LogUtils.d("接口上报reportEvent id:$id")
             networkQualaReport(id)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -86,16 +87,16 @@ object InvokeAppHelper {
             return
         }
         val json = JsonObject()
-        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
-        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
+        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(QualaConstants.KEY_GAID, SPUtils.getGaid())
         json.addProperty("action", "contact_lva")
         json.addProperty("id", id)
         HttpRetrofit.getInstance().create(QualaApi::class.java)
             .getQualaEvent(HttpRequest.getRequestBody(json))
-            .compose(HttpSchedulers.applySchedulers<HttpResponse<EventBean?>?>())
-            .subscribe(object : HttpObserver<EventBean?>() {
-                override fun onSuccess(data: EventBean?) {
-                    LogUtils.i("jxc", "onSuccess EventBean:$data")
+            .compose(HttpSchedulers.applySchedulers<HttpResponse<QualaEventBean?>?>())
+            .subscribe(object : HttpObserver<QualaEventBean?>() {
+                override fun onSuccess(data: QualaEventBean?) {
+                    LogUtils.i("onSuccess EventBean:$data")
                     SPUtils.userEvent = true
                     if (data != null && data.refresh) {
                         EventBus.getDefault().post(RefreshListEvent())
@@ -107,10 +108,10 @@ object InvokeAppHelper {
     /**
      * 获取url
      */
-    private fun getStartIntentUrl(listBean: ListBean?): String {
+    private fun getStartIntentUrl(qualaListBean: QualaListBean?): String {
         try {
-            if (listBean?.contacts?.isNotEmpty() == true) {
-                val bean = listBean.contacts!![0] ?: return ""
+            if (qualaListBean?.contacts?.isNotEmpty() == true) {
+                val bean = qualaListBean.contacts!![0] ?: return ""
                 return bean.url + "?text=" + bean.text
             }
         } catch (e: Exception) {
@@ -124,7 +125,7 @@ object InvokeAppHelper {
      */
     private fun startIntentUrl(activity: Activity?, url: String) {
         try {
-            LogUtils.d("jxc", "openUrl url:$url")
+            LogUtils.d("openUrl url:$url")
             if (activity == null) {
                 return
             }
@@ -141,7 +142,7 @@ object InvokeAppHelper {
      */
     private fun setInvokeAppCount() {
         var count: Int = SPUtils.getInvokeAppSuccessCount()
-        LogUtils.i("jxc", "setInvokeAppCount: $count")
+        LogUtils.i("setInvokeAppCount: $count")
         val configEntity = ParseDataHelper.getConfigJsonData()
         val limitClick = if (configEntity?.contacts?.limits != null) {
             configEntity.contacts?.limits?.click ?: 0
@@ -164,7 +165,7 @@ object InvokeAppHelper {
      */
     private fun setFirstInvokeAppTime() {
         val time: Long = SPUtils.getFirstInvokeAppSuccessTime()
-        LogUtils.w("jxc", "setFirstInvokeAppTime 记录首次启动invokeApp 时间:$time")
+        LogUtils.w("setFirstInvokeAppTime 记录首次启动invokeApp 时间:$time")
         if (time > 0) {
             return
         }
@@ -177,10 +178,9 @@ object InvokeAppHelper {
         if (limitHour <= 0) {
             return
         }
-        LogUtils.w("jxc", "记录首次启动invokeApp 时间:$limitHour")
+        LogUtils.w("记录首次启动invokeApp 时间:$limitHour")
         val l = System.currentTimeMillis() + limitHour * 60 * 60 * 1000L
         SPUtils.setFirstInvokeAppSuccessTime(l)
-        //todo
-        //EventBus.getDefault().post(InvokeAppStartTimeEvent())
+        EventBus.getDefault().post(InvokeAppStartTimeEvent())
     }
 }

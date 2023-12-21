@@ -1,9 +1,11 @@
 package com.kkkl.cowieu.helper
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.kkkl.cowieu.bean.ConfigBean
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaConfigBean
+import com.kkkl.cowieu.bean.QualaListBean
+import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
 
 /**
@@ -19,20 +21,21 @@ object ParseDataHelper {
     /**
      * 获取config_json解析成对象数据
      */
-    fun getConfigJsonData(): ConfigBean? {
+    fun getConfigJsonData(): QualaConfigBean? {
         val configJson = SPUtils.getConfigJson()
+        LogUtils.i("configJson:$configJson")
         return if (!configJson.isNullOrEmpty()) {
-            Gson().fromJson(configJson, object : TypeToken<ConfigBean?>() {}.type)
+            Gson().fromJson(configJson, object : TypeToken<QualaConfigBean?>() {}.type)
         } else null
     }
 
     /**
      * 获取job_list_Data 对象数据信息
      */
-    fun getListJsonData(): MutableList<ListBean> {
+    fun getListJsonData(): MutableList<QualaListBean> {
         val listJson = SPUtils.getJobListJson()
         return if (!listJson.isNullOrEmpty()) {
-            Gson().fromJson(listJson, object : TypeToken<MutableList<ListBean?>?>() {}.type)
+            Gson().fromJson(listJson, object : TypeToken<MutableList<QualaListBean?>?>() {}.type)
         } else mutableListOf()
     }
 

@@ -8,7 +8,7 @@ package com.kkkl.cowieu.helper
  * @package_name com.kkkl.cowieu.helper
  * @date 2023/12/20 11:22
  */
-object Constants {
+object QualaConstants {
     //------------------------sp key------------------------
     const val KEY_ADJUST_RESULT = "adjust_result"
 

@@ -7,8 +7,8 @@ import android.view.View
 import android.widget.TextView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.kkkl.cowieu.R
-import com.kkkl.cowieu.bean.ConfigBean
-import com.kkkl.cowieu.bean.ListBean.DescriptionsBean
+import com.kkkl.cowieu.bean.QualaConfigBean
+import com.kkkl.cowieu.bean.QualaListBean.DescriptionsBean
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.util.UIUtils
 
@@ -22,10 +22,10 @@ import com.kkkl.cowieu.util.UIUtils
  */
 class DetailAdapter :
     BaseQuickAdapter<DescriptionsBean?, MyBaseViewHolder>(R.layout.item_detial_content, null) {
-    private var configBean: ConfigBean? = null
+    private var qualaConfigBean: QualaConfigBean? = null
 
     init {
-        configBean = ParseDataHelper.getConfigJsonData()
+        qualaConfigBean = ParseDataHelper.getConfigJsonData()
     }
 
     /**
@@ -59,7 +59,7 @@ class DetailAdapter :
             setHtmlContent(holder.getView(R.id.tv_detail_desc), builder.toString())
             //当rtl为true时，支持文案展示从右往左展示
             UIUtils.setTextDirection(
-                configBean?.rtl == true,
+                qualaConfigBean?.rtl == true,
                 holder.getView(R.id.tv_detail_title),
                 holder.getView(R.id.tv_detail_desc)
             )

@@ -10,9 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.kkkl.cowieu.R
-import com.kkkl.cowieu.bean.ConfigBean
+import com.kkkl.cowieu.bean.QualaConfigBean
 import com.kkkl.cowieu.event.LoadAdjustEvent
-import com.kkkl.cowieu.helper.Constants
+import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.quala_api.QualaApi
 import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
@@ -42,6 +42,8 @@ class SplashActivity : AppCompatActivity() {
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
         }
+
+        notifyAdjustResult(LoadAdjustEvent(2))
     }
 
     /**
@@ -53,16 +55,16 @@ class SplashActivity : AppCompatActivity() {
             if (isDestroyed) {
                 return
             }
-            val gaid = SPUtils.getGaid()
-            val adjuest = SPUtils.getAdjustResult()
-            LogUtils.v("jxc", "开始请求config接口 source:${event.type} gaid>>>>$gaid<<<<adjuest>>>>$adjuest")
-            if (TextUtils.isEmpty(gaid) || TextUtils.isEmpty(adjuest)) {
+            val grid = SPUtils.getGaid()
+            val adjust = SPUtils.getAdjustResult()
+            LogUtils.v("开始请求config接口 source:${event.type} gaid>>>>$grid<<<<adjuest>>>>$adjust")
+            if (TextUtils.isEmpty(grid) || TextUtils.isEmpty(adjust)) {
                 return
             }
 
             //判断config数据
             val configJson = SPUtils.getConfigJson()
-            if (TextUtils.isEmpty(configJson)) {
+            if (configJson.isNullOrEmpty()) {
                 getConfigData(this)
             } else {
                 startMainActivity(2000)
@@ -78,14 +80,14 @@ class SplashActivity : AppCompatActivity() {
      */
     private fun getConfigData(context: Context) {
         val json = JsonObject()
-        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
-        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
+        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(QualaConstants.KEY_GAID, SPUtils.getGaid())
         HttpRetrofit.getInstance().create(QualaApi::class.java)
             .getQualaConfig(HttpRequest.getRequestBody(json))
             .compose(HttpSchedulers.applySchedulers())
-            .subscribe(object : HttpObserver<ConfigBean?>() {
-                override fun onSuccess(data: ConfigBean?) {
-                    LogUtils.w("jxc", "onSuccess config:" + Gson().toJson(data))
+            .subscribe(object : HttpObserver<QualaConfigBean?>() {
+                override fun onSuccess(data: QualaConfigBean?) {
+                    LogUtils.w("onSuccess config:" + Gson().toJson(data))
                     SPUtils.setConfigJson(context, Gson().toJson(data))
                     startMainActivity(500)
                 }

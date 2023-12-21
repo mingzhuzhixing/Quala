@@ -1,14 +1,14 @@
 package com.kkkl.cowieu.bean
 
 /**
- * ClassName: ConfigBean
- * Description:
+ * ClassName: QualaConfigBean
+ * Description: 配置信息
  *
- * @author jxc
+ * @author jiaxiaochen
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/19 10:37
  */
-class ConfigBean {
+class QualaConfigBean {
     var contact: ContactBean? = null
     var actions: ActionsBean? = null
     var chatScript: ChatScriptBean? = null

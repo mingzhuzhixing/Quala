@@ -4,7 +4,7 @@ import android.content.Context
 import android.text.TextUtils
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaListBean
 import com.kkkl.cowieu.helper.ParseDataHelper.getConfigJsonData
 import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
@@ -32,13 +32,13 @@ object ReportEventHelper {
     /**
      * 事件上报 两个参数
      */
-    fun eventReport(key: String, code: String?) {
-        LogUtils.e("jxc", "上报key：$key code：$code")
+    private fun eventReport(key: String, code: String?) {
+        LogUtils.e("上报key：$key code：$code")
         if (TextUtils.isEmpty(code)) {
             return
         }
         val adjustEvent = AdjustEvent(code)
-        LogUtils.e("jxc", "上报 trackEvent：" + adjustEvent.eventToken)
+        LogUtils.e("上报 trackEvent：" + adjustEvent.eventToken)
         Adjust.trackEvent(adjustEvent)
     }
 
@@ -53,19 +53,19 @@ object ReportEventHelper {
         if (TextUtils.isEmpty(key) || adjustBean == null) {
             return ""
         }
-        if (Constants.APP_SHOW_APP == key) {
+        if (QualaConstants.APP_SHOW_APP == key) {
             return adjustBean.app_show_app?.code ?: ""
-        } else if (Constants.ADDTOCARTLT == key) {
+        } else if (QualaConstants.ADDTOCARTLT == key) {
             return adjustBean.addtocartlt?.code ?: ""
-        } else if (Constants.ADDTOCARTPV == key) {
+        } else if (QualaConstants.ADDTOCARTPV == key) {
             return adjustBean.addtocartpv?.code ?: ""
-        } else if (Constants.ADDTOCART_WS == key) {
+        } else if (QualaConstants.ADDTOCART_WS == key) {
             return adjustBean.addtocart_ws?.code ?: ""
-        } else if (Constants.JOBS_SHOW_CARD == key) {
+        } else if (QualaConstants.JOBS_SHOW_CARD == key) {
             return adjustBean.jobs_show_card?.code ?: ""
-        } else if (Constants.JOBS_SHOW_PTJOB == key) {
+        } else if (QualaConstants.JOBS_SHOW_PTJOB == key) {
             return adjustBean.jobs_show_ptjob?.code ?: ""
-        } else if (Constants.CONTACT_SHOW_POPUP == key) {
+        } else if (QualaConstants.CONTACT_SHOW_POPUP == key) {
             return adjustBean.contact_show_popup?.code ?: ""
         }
         return ""
@@ -74,14 +74,14 @@ object ReportEventHelper {
     /**
      * 上班job显示事件
      */
-    fun reportJobsShow(listBeans: List<ListBean?>) {
+    fun reportJobsShow(qualaListBeans: List<QualaListBean?>) {
         //上报
-        if (listBeans.isNotEmpty()) {
-            eventReport(Constants.JOBS_SHOW_CARD)
+        if (qualaListBeans.isNotEmpty()) {
+            eventReport(QualaConstants.JOBS_SHOW_CARD)
             if (!SPUtils.getJobsShowPtJob()) {
-                for (bean in listBeans) {
+                for (bean in qualaListBeans) {
                     if ("c" == bean?.type) {
-                        eventReport(Constants.JOBS_SHOW_PTJOB)
+                        eventReport(QualaConstants.JOBS_SHOW_PTJOB)
                         SPUtils.setJobsShowPtJob(true)
                         break
                     }
@@ -90,20 +90,18 @@ object ReportEventHelper {
         }
     }
 
-    private const val APP_SHOW_APP_CODE = "zfh3rg"
+    private const val APP_SHOW_APP_CODE = "7olgzc"
 
     /**
      * 上报 showApp
      */
-    fun reportShowApp(context: Context?) {
+    fun reportShowApp() {
         val bean = getConfigJsonData()
         val adjust = bean?.report?.adjust
         if (adjust?.app_show_app != null) {
-            eventReport(Constants.APP_SHOW_APP, adjust.app_show_app?.code)
-            LogUtils.v("jxc", "startMainActivity() 开启主页面 上报app_start_app 获取的")
+            eventReport(QualaConstants.APP_SHOW_APP, adjust.app_show_app?.code)
         } else {
-            LogUtils.v("jxc", "startMainActivity() 开启主页面 上报app_start_app 写死的")
-            eventReport(Constants.APP_SHOW_APP, APP_SHOW_APP_CODE)
+            eventReport(QualaConstants.APP_SHOW_APP, APP_SHOW_APP_CODE)
         }
     }
 }

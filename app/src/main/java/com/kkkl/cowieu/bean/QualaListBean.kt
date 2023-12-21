@@ -4,14 +4,14 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * ClassName: ListBean
+ * ClassName: QualaListBean
  * Description: home页数据类型
  *
- * @author jxc
+ * @author jiaxiaochen
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/19 10:44
  */
-class ListBean : Parcelable {
+class QualaListBean : Parcelable {
     var type: String? = null
     var contacts: List<ContactsBean>? = null
     var tag: String? = null
@@ -127,12 +127,12 @@ class ListBean : Parcelable {
         }
     }
 
-    companion object CREATOR : Parcelable.Creator<ListBean?> {
-        override fun createFromParcel(`in`: Parcel): ListBean {
-            return ListBean(`in`)
+    companion object CREATOR : Parcelable.Creator<QualaListBean?> {
+        override fun createFromParcel(`in`: Parcel): QualaListBean {
+            return QualaListBean(`in`)
         }
 
-        override fun newArray(size: Int): Array<ListBean?> {
+        override fun newArray(size: Int): Array<QualaListBean?> {
             return arrayOfNulls(size)
         }
     }

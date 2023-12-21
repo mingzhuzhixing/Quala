@@ -1,8 +1,8 @@
 package com.kkkl.cowieu.quala_api
 
-import com.kkkl.cowieu.bean.ConfigBean
-import com.kkkl.cowieu.bean.EventBean
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaConfigBean
+import com.kkkl.cowieu.bean.QualaEventBean
+import com.kkkl.cowieu.bean.QualaListBean
 import com.quala.network.http.HttpResponse
 import io.reactivex.Observable
 import okhttp3.RequestBody
@@ -22,17 +22,17 @@ interface QualaApi {
      * 配置信息
      */
     @POST("quala/c1c")
-    fun getQualaConfig(@Body body: RequestBody?): Observable<HttpResponse<ConfigBean?>?>
+    fun getQualaConfig(@Body body: RequestBody?): Observable<HttpResponse<QualaConfigBean?>?>
 
     /**
      * 工作列表
      */
     @POST("quala/j2j")
-    fun getQualaJobList(@Body body: RequestBody?): Observable<HttpResponse<List<ListBean?>?>?>
+    fun getQualaJobList(@Body body: RequestBody?): Observable<HttpResponse<List<QualaListBean?>?>?>
 
     /**
      * 配置信息
      */
     @POST("quala/e3e")
-    fun getQualaEvent(@Body body: RequestBody?): Observable<HttpResponse<EventBean?>?>
+    fun getQualaEvent(@Body body: RequestBody?): Observable<HttpResponse<QualaEventBean?>?>
 }

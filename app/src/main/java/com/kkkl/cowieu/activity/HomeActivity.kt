@@ -1,8 +1,8 @@
 package com.kkkl.cowieu.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,13 +13,15 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.kkkl.cowieu.R
 import com.kkkl.cowieu.adapter.HomeAdapter
-import com.kkkl.cowieu.bean.ListBean
+import com.kkkl.cowieu.bean.QualaListBean
 import com.kkkl.cowieu.event.RefreshCardDataEvent
 import com.kkkl.cowieu.event.RefreshListEvent
-import com.kkkl.cowieu.helper.Constants
 import com.kkkl.cowieu.helper.ParseDataHelper
+import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.helper.ReportEventHelper
 import com.kkkl.cowieu.quala_api.QualaApi
+import com.kkkl.cowieu.service.CountDownService
+import com.kkkl.cowieu.util.LogUtils
 import com.kkkl.cowieu.util.SPUtils
 import com.quala.network.decoration.SpaceItemDecoration
 import com.quala.network.http.HttpObserver
@@ -46,8 +48,11 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+        ReportEventHelper.reportShowApp()
+        recordFirstOpenAppTime()
         initView()
         initData()
+        startCountDownService()
     }
 
     private fun initView() {
@@ -70,7 +75,7 @@ class HomeActivity : AppCompatActivity() {
      */
     private fun initData() {
         //判断列表数据
-        val listJson = SPUtils.getJobListJson()
+        val listJson = SPUtils.getListJson()
         if (TextUtils.isEmpty(listJson)) {
             requestListData()
         } else {
@@ -82,26 +87,53 @@ class HomeActivity : AppCompatActivity() {
     }
 
     /**
+     * 启动定时器service
+     */
+    private fun startCountDownService() {
+        val intent = Intent(this@HomeActivity, CountDownService::class.java)
+        startService(intent)
+    }
+
+    /**
      * 获取列表数据
      */
     private fun requestListData() {
         val json = JsonObject()
-        json.addProperty(Constants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
-        json.addProperty(Constants.KEY_GAID, SPUtils.getGaid())
+        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
+        json.addProperty(QualaConstants.KEY_GAID, SPUtils.getGaid())
         HttpRetrofit.getInstance().create(QualaApi::class.java)
             .getQualaJobList(HttpRequest.getRequestBody(json))
             .compose(HttpSchedulers.applySchedulers())
-            .subscribe(object : HttpObserver<List<ListBean?>>() {
-                override fun onSuccess(data: List<ListBean?>) {
-                    Log.i("jxc", "onSuccess list: " + data.size)
+            .subscribe(object : HttpObserver<List<QualaListBean?>>() {
+                override fun onSuccess(data: List<QualaListBean?>) {
+                    LogUtils.i("onSuccess list: " + data.size)
                     progressBar.visibility = View.GONE
-                    SPUtils.setJobListJson(Gson().toJson(data))
+                    SPUtils.setListJson(Gson().toJson(data))
                     mAdapter?.setList(data)
                     ReportEventHelper.reportJobsShow(data)
                 }
             })
     }
 
+
+    /**
+     * 记录第一次打开app 时间
+     */
+    private fun recordFirstOpenAppTime() {
+        val time = SPUtils.getFirstOpenAppTime()
+        LogUtils.d("记录首次启动app 时间:$time")
+        if (time > 0) {
+            return
+        }
+        val configEntity = ParseDataHelper.getConfigJsonData()
+        val limitHour = configEntity?.contacts?.limits?.hour ?: 0
+        LogUtils.d("记录首次启动app 时间 limitHour:$limitHour")
+        if (limitHour <= 0) {
+            return
+        }
+        val l = System.currentTimeMillis() + limitHour * 60 * 60 * 1000L
+        SPUtils.setFirstOpenAppTime(l)
+    }
 
     /**
      * 刷新 c card数据
@@ -113,14 +145,14 @@ class HomeActivity : AppCompatActivity() {
                 return
             }
             val listBeans = ParseDataHelper.getListJsonData()
-            val iterator: MutableIterator<ListBean> = listBeans.iterator()
+            val iterator: MutableIterator<QualaListBean> = listBeans.iterator()
             while (iterator.hasNext()) {
-                val bean: ListBean = iterator.next()
+                val bean: QualaListBean = iterator.next()
                 if ("c".equals(bean.type, ignoreCase = true)) {
                     iterator.remove()
                 }
             }
-            SPUtils.setJobListJson(Gson().toJson(listBeans))
+            SPUtils.setListJson(Gson().toJson(listBeans))
             mAdapter?.setList(listBeans)
         } catch (e: Exception) {
             e.printStackTrace()
