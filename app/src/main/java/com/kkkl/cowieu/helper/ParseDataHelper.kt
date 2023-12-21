@@ -22,7 +22,7 @@ object ParseDataHelper {
      */
     fun getConfigJsonData(): QualaConfigBean? {
         val configJson = SPUtils.getConfigJson()
-        LogUtils.i("configJson:$configJson")
+        //LogUtils.i("configJson:$configJson")
         return if (!configJson.isNullOrEmpty()) {
             Gson().fromJson(configJson, object : TypeToken<QualaConfigBean?>() {}.type)
         } else null
