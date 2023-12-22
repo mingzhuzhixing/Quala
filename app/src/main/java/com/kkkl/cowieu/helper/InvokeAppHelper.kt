@@ -34,6 +34,7 @@ object InvokeAppHelper {
     fun invokeAppOpen(activity: Activity?, QualaListBean: QualaListBean?) {
         //addtocartpv 上报
         ReportEventHelper.eventReport(QualaConstants.ADDTOCARTPV)
+
         if (!SPUtils.addToCartLt) {
             //addtocartlt 上报
             ReportEventHelper.eventReport(QualaConstants.ADDTOCARTLT)
