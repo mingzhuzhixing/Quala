@@ -14,14 +14,14 @@ import com.kkkl.cowieu.dialog.HomeDialog
 import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.helper.ParseDataHelper
 import com.kkkl.cowieu.util.UIUtils
-import com.quala.network.decoration.SpaceItemDecoration
+import com.kkkl.cowieu.widget.RecyclerDecoration
 import kotlinx.android.synthetic.main.activity_details.*
 
 /**
  * ClassName: DetailsActivity
  * Description: 详情页
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.activity
  * @date 2023/12/19 10:43
  */
@@ -64,7 +64,7 @@ class DetailsActivity : AppCompatActivity() {
 
         val detailAdapter = DetailAdapter()
 
-        val dividerItem = SpaceItemDecoration(this, DividerItemDecoration.VERTICAL, false)
+        val dividerItem = RecyclerDecoration(this, DividerItemDecoration.VERTICAL, false)
         dividerItem.setDrawable(resources.getDrawable(R.drawable.shape_divider_line_height_30))
 
         recycler_view.apply {

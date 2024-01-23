@@ -4,7 +4,7 @@ package com.kkkl.cowieu.helper
  * ClassName: com.kkkl.cowieu.helper.Constants
  * Description: 常量值
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.helper
  * @date 2023/12/20 11:22
  */

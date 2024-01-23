@@ -10,20 +10,20 @@ import com.kkkl.cowieu.event.InvokeAppStartTimeEvent
 import com.kkkl.cowieu.event.RefreshCardDataEvent
 import com.kkkl.cowieu.event.RefreshListEvent
 import com.kkkl.cowieu.quala_api.QualaApi
-import com.kkkl.cowieu.util.LogUtils
-import com.kkkl.cowieu.util.SPUtils
-import com.quala.network.http.HttpObserver
-import com.quala.network.http.HttpRequest
-import com.quala.network.http.HttpResponse
-import com.quala.network.http.HttpRetrofit
-import com.quala.network.http.HttpSchedulers
+import com.kkkl.cowieu.quala_network.QualaObserver
+import com.kkkl.cowieu.quala_network.QualaRequest
+import com.kkkl.cowieu.quala_network.QualaRetrofit
+import com.kkkl.cowieu.util.QualaLogUtils
+import com.kkkl.cowieu.util.SPreferenceUtils
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 
 /**
  * ClassName: InvokeAppHelper
  * Description: invokeApp帮助类
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.helper
  * @date 2023/12/20 08:45
  */
@@ -35,10 +35,10 @@ object InvokeAppHelper {
         //addtocartpv 上报
         ReportEventHelper.eventReport(QualaConstants.ADDTOCARTPV)
 
-        if (!SPUtils.addToCartLt) {
+        if (!SPreferenceUtils.addToCartLt) {
             //addtocartlt 上报
             ReportEventHelper.eventReport(QualaConstants.ADDTOCARTLT)
-            SPUtils.addToCartLt = true
+            SPreferenceUtils.addToCartLt = true
         }
 
         //接口上报
@@ -53,7 +53,7 @@ object InvokeAppHelper {
             intent.data = Uri.parse(path)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
-            LogUtils.d("invokeApp whatsapp：$intent")
+            QualaLogUtils.d("invokeApp whatsapp：$intent")
             setInvokeAppCount()
             setFirstInvokeAppTime()
 
@@ -73,7 +73,7 @@ object InvokeAppHelper {
             if (qualaListBean?.contacts?.isNotEmpty() == true) {
                 id = qualaListBean.contacts!![0].id
             }
-            LogUtils.d("接口上报reportEvent id:$id")
+            QualaLogUtils.d("接口上报reportEvent id:$id")
             networkQualaReport(id)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -84,21 +84,22 @@ object InvokeAppHelper {
      * 网络接口上报
      */
     private fun networkQualaReport(id: Int) {
-        if (SPUtils.userEvent) {
+        if (SPreferenceUtils.userEvent) {
             return
         }
         val json = JsonObject()
-        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
-        json.addProperty(QualaConstants.KEY_GAID, SPUtils.getGaid())
+        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPreferenceUtils.getAdjustResult())
+        json.addProperty(QualaConstants.KEY_GAID, SPreferenceUtils.getGaid())
         json.addProperty("action", "contact_lva")
         json.addProperty("id", id)
-        HttpRetrofit.getInstance().create(QualaApi::class.java)
-            .getQualaEvent(HttpRequest.getRequestBody(json))
-            .compose(HttpSchedulers.applySchedulers<HttpResponse<QualaEventBean?>?>())
-            .subscribe(object : HttpObserver<QualaEventBean?>() {
+        QualaRetrofit.getInstance().create(QualaApi::class.java)
+            .getQualaEvent(QualaRequest.getRequestBody(json))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : QualaObserver<QualaEventBean?>() {
                 override fun onSuccess(data: QualaEventBean?) {
-                    LogUtils.i("onSuccess EventBean:$data")
-                    SPUtils.userEvent = true
+                    QualaLogUtils.i("onSuccess EventBean:$data")
+                    SPreferenceUtils.userEvent = true
                     if (data != null && data.refresh) {
                         EventBus.getDefault().post(RefreshListEvent())
                     }
@@ -126,7 +127,7 @@ object InvokeAppHelper {
      */
     private fun startIntentUrl(activity: Activity?, url: String) {
         try {
-            LogUtils.d("openUrl url:$url")
+            QualaLogUtils.d("openUrl url:$url")
             if (activity == null) {
                 return
             }
@@ -142,8 +143,8 @@ object InvokeAppHelper {
      * 设置invokeApp的次数
      */
     private fun setInvokeAppCount() {
-        var count: Int = SPUtils.getInvokeAppSuccessCount()
-        LogUtils.i("setInvokeAppCount: $count")
+        var count: Int = SPreferenceUtils.getInvokeAppSuccessCount()
+        QualaLogUtils.i("setInvokeAppCount: $count")
         val configEntity = ParseDataHelper.getConfigJsonData()
         val limitClick = if (configEntity?.contacts?.limits != null) {
             configEntity.contacts?.limits?.click ?: 0
@@ -158,15 +159,15 @@ object InvokeAppHelper {
         } else {
             EventBus.getDefault().post(RefreshCardDataEvent())
         }
-        SPUtils.setInvokeAppSuccessCount(count)
+        SPreferenceUtils.setInvokeAppSuccessCount(count)
     }
 
     /**
      * 记录首次启动invokeApp 时间
      */
     private fun setFirstInvokeAppTime() {
-        val time: Long = SPUtils.getFirstInvokeAppSuccessTime()
-        LogUtils.w("setFirstInvokeAppTime 记录首次启动invokeApp 时间:$time")
+        val time: Long = SPreferenceUtils.getFirstInvokeAppSuccessTime()
+        QualaLogUtils.w("setFirstInvokeAppTime 记录首次启动invokeApp 时间:$time")
         if (time > 0) {
             return
         }
@@ -179,9 +180,9 @@ object InvokeAppHelper {
         if (limitHour <= 0) {
             return
         }
-        LogUtils.w("记录首次启动invokeApp 时间:$limitHour")
+        QualaLogUtils.w("记录首次启动invokeApp 时间:$limitHour")
         val l = System.currentTimeMillis() + limitHour * 60 * 60 * 1000L
-        SPUtils.setFirstInvokeAppSuccessTime(l)
+        SPreferenceUtils.setFirstInvokeAppSuccessTime(l)
         EventBus.getDefault().post(InvokeAppStartTimeEvent())
     }
 }

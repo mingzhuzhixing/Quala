@@ -10,8 +10,8 @@ import com.adjust.sdk.BuildConfig
 import com.adjust.sdk.LogLevel
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import com.kkkl.cowieu.event.LoadAdjustEvent
-import com.kkkl.cowieu.util.LogUtils
-import com.kkkl.cowieu.util.SPUtils
+import com.kkkl.cowieu.util.QualaLogUtils
+import com.kkkl.cowieu.util.SPreferenceUtils
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +21,7 @@ import org.greenrobot.eventbus.EventBus
  * ClassName: InitHelper
  * Description: 初始化管理类
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.helper
  * @date 2023/12/19 10:45
  */
@@ -58,12 +58,12 @@ class InitHelper {
     @SuppressLint("CheckResult")
     private fun initData(context: Context) {
         Observable.zip<String, String, String>(getGaid(context), getAdjustCode(context)) { s, s2 ->
-            LogUtils.i("apply>> s:$s s2:$s2")
+            QualaLogUtils.i("apply>> s:$s s2:$s2")
             "success"
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { o ->
-                LogUtils.i("最终设备id>>$o")
+                QualaLogUtils.i("最终设备id>>$o")
                 EventBus.getDefault().post(LoadAdjustEvent(1))
             }
     }
@@ -73,7 +73,7 @@ class InitHelper {
      */
     private fun getGaid(context: Context): Observable<String> {
         return Observable.create { emitter ->
-            val result: String = SPUtils.getGaid() ?: ""
+            val result: String = SPreferenceUtils.getGaid() ?: ""
             if (!TextUtils.isEmpty(result)) {
                 emitter.onNext(result)
             }
@@ -81,8 +81,8 @@ class InitHelper {
                 try {
                     val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
                     val gaid = adInfo.id
-                    LogUtils.i("gaid:$gaid")
-                    SPUtils.setGaid(gaid ?: "")
+                    QualaLogUtils.i("gaid:$gaid")
+                    SPreferenceUtils.setGaid(gaid ?: "")
                     emitter.onNext(gaid!!)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -96,7 +96,7 @@ class InitHelper {
      */
     private fun getAdjustCode(context: Context): Observable<String> {
         return Observable.create<String> { emitter ->
-            val result: String = SPUtils.getAdjustResult() ?: ""
+            val result: String = SPreferenceUtils.getAdjustResult() ?: ""
             if (!TextUtils.isEmpty(result)) {
                 emitter.onNext(result)
             }
@@ -106,16 +106,16 @@ class InitHelper {
             }
             val config = AdjustConfig(context, APP_TOKEN, environment)
             config.setOnEventTrackingSucceededListener { eventSuccessResponseData ->
-                LogUtils.e("归因 事件上报成功：$eventSuccessResponseData")
+                QualaLogUtils.e("归因 事件上报成功：$eventSuccessResponseData")
             }
             config.setOnEventTrackingFailedListener { eventFailureResponseData ->
-                LogUtils.e("归因 事件上报失败：$eventFailureResponseData")
+                QualaLogUtils.e("归因 事件上报失败：$eventFailureResponseData")
             }
             config.setSendInBackground(true)
             config.setLogLevel(LogLevel.INFO)
             config.setOnAttributionChangedListener { attribution ->
-                LogUtils.i("onAttributionChanged: $attribution")
-                SPUtils.setAdjustResult(context, attribution.toString())
+                QualaLogUtils.i("onAttributionChanged: $attribution")
+                SPreferenceUtils.setAdjustResult(context, attribution.toString())
                 emitter.onNext(attribution.toString())
             }
             Adjust.onCreate(config)

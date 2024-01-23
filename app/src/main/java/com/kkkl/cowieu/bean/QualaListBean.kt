@@ -7,7 +7,7 @@ import android.os.Parcelable
  * ClassName: QualaListBean
  * Description: home页数据类型
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/19 10:44
  */

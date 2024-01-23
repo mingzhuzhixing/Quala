@@ -4,7 +4,7 @@ package com.kkkl.cowieu.bean
  * ClassName: QualaEventBean
  * Description: 事件信息
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/22 23:37
  */

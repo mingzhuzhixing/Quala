@@ -6,8 +6,8 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import com.kkkl.cowieu.event.InvokeAppStartTimeEvent
 import com.kkkl.cowieu.event.RefreshCardDataEvent
-import com.kkkl.cowieu.util.LogUtils
-import com.kkkl.cowieu.util.SPUtils
+import com.kkkl.cowieu.util.QualaLogUtils
+import com.kkkl.cowieu.util.SPreferenceUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -16,7 +16,7 @@ import org.greenrobot.eventbus.ThreadMode
  * ClassName: CountDownService
  * Description: 倒计时service
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu
  * @date 2023/12/21 08:43
  */
@@ -46,20 +46,20 @@ class CountDownService : Service() {
         if (mInvokeAppSuccessTimer != null) {
             mInvokeAppSuccessTimer?.cancel()
         }
-        val subTime: Long = SPUtils.getFirstInvokeAppSuccessTime() - System.currentTimeMillis() //毫秒
-        LogUtils.d("invokeAppSuccessTimer:$subTime")
+        val subTime: Long = SPreferenceUtils.getFirstInvokeAppSuccessTime() - System.currentTimeMillis() //毫秒
+        QualaLogUtils.d("invokeAppSuccessTimer:$subTime")
         if (subTime <= 0) {
             return
         }
         mInvokeAppSuccessTimer = object : CountDownTimer(subTime, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 // 每过一秒回调此方法
-                LogUtils.i("invokeAppSuccessTimer onTick: $millisUntilFinished");
+                QualaLogUtils.i("invokeAppSuccessTimer onTick: $millisUntilFinished");
             }
 
             override fun onFinish() {
                 // 倒计时结束后回调此方法
-                LogUtils.i("invokeAppSuccessTimer 倒计时结束后回调此方法")
+                QualaLogUtils.i("invokeAppSuccessTimer 倒计时结束后回调此方法")
                 EventBus.getDefault().post(RefreshCardDataEvent())
             }
         }
@@ -73,20 +73,20 @@ class CountDownService : Service() {
         if (mOpenAppTimer != null) {
             mOpenAppTimer?.cancel()
         }
-        val subTime: Long = SPUtils.getFirstOpenAppTime() - System.currentTimeMillis() //毫秒
+        val subTime: Long = SPreferenceUtils.getFirstOpenAppTime() - System.currentTimeMillis() //毫秒
         if (subTime <= 0) {
             return
         }
-        LogUtils.d("openAppTimer:$subTime")
+        QualaLogUtils.d("openAppTimer:$subTime")
         mOpenAppTimer = object : CountDownTimer(subTime, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 // 每过一秒回调此方法
-                LogUtils.i("openAppTimer onTick: $millisUntilFinished");
+                QualaLogUtils.i("openAppTimer onTick: $millisUntilFinished");
             }
 
             override fun onFinish() {
                 // 倒计时结束后回调此方法
-                LogUtils.i("openAppTimer 倒计时结束后回调此方法")
+                QualaLogUtils.i("openAppTimer 倒计时结束后回调此方法")
                 EventBus.getDefault().post(RefreshCardDataEvent())
             }
         }

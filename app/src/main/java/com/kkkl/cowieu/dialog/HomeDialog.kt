@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.dialog_home_layout.*
  * ClassName: com.kkkl.cowieu.ui.HomeDialog
  * Description: 首页弹框
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.dialog
  * @date 2023/12/20 09:51
  */

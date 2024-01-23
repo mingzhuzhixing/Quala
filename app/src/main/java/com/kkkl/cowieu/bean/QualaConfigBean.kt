@@ -4,7 +4,7 @@ package com.kkkl.cowieu.bean
  * ClassName: QualaConfigBean
  * Description: 配置信息
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/19 10:37
  */

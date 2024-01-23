@@ -53,6 +53,9 @@ ext {
     installreferrer_version = '2.2'
     identifier_android = '18.0.1'
     appset_android = '16.0.2'
+    okhttp_need_version = '4.9.3'
+    retrofit_need_version = '2.4.0'
+    rxjava_android = '2.0.2'
 }
 
 dependencies {
@@ -77,5 +80,12 @@ dependencies {
     implementation "com.google.android.gms:play-services-ads-identifier:${identifier_android}"
     implementation "com.google.android.gms:play-services-appset:${appset_android}"
 
-    implementation project(":network")
+    api "com.squareup.okhttp3:okhttp:${okhttp_need_version}"
+    api "com.squareup.okhttp3:okhttp-urlconnection:${okhttp_need_version}"
+    api "com.squareup.okhttp3:logging-interceptor:${okhttp_need_version}"
+    api "com.squareup.okhttp3:okhttp-sse:${okhttp_need_version}"
+    api "com.squareup.retrofit2:retrofit:${retrofit_need_version}"
+    api "com.squareup.retrofit2:adapter-rxjava2:${retrofit_need_version}"
+    api "com.squareup.retrofit2:converter-gson:${retrofit_need_version}"
+    api "io.reactivex.rxjava2:rxandroid:${rxjava_android}"
 }

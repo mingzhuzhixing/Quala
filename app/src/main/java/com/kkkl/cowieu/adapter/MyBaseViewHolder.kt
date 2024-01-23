@@ -10,7 +10,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
  * ClassName: com.kkkl.cowieu.adapter.MyBaseViewHolder
  * Description: 自定义ViewHolder
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.adapter
  * @date 2023/12/20 21:02
  */

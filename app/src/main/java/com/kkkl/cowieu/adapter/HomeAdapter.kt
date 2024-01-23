@@ -22,7 +22,7 @@ import com.kkkl.cowieu.util.UIUtils
  * ClassName: HomeAdapter
  * Description: 首页适配器
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.bean
  * @date 2023/12/20 13:37
  */

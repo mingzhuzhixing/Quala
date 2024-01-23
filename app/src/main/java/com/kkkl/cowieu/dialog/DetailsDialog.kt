@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.dialog_details_layout.tv_c_content
  * ClassName: com.kkkl.cowieu.dialog.DetailsDialog
  * Description: 详情页弹框
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.dialog
  * @date 2023/12/20 09:48
  */

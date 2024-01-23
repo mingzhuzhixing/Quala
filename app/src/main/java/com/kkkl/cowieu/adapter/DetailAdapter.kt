@@ -16,7 +16,7 @@ import com.kkkl.cowieu.util.UIUtils
  * ClassName: com.kkkl.cowieu.adapter.DetailAdapter
  * Description: 详情适配器
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.adapter
  * @date 2023/12/20 21:00
  */

@@ -1,19 +1,18 @@
 package com.kkkl.cowieu.helper
 
-import android.content.Context
 import android.text.TextUtils
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
 import com.kkkl.cowieu.bean.QualaListBean
 import com.kkkl.cowieu.helper.ParseDataHelper.getConfigJsonData
-import com.kkkl.cowieu.util.LogUtils
-import com.kkkl.cowieu.util.SPUtils
+import com.kkkl.cowieu.util.QualaLogUtils
+import com.kkkl.cowieu.util.SPreferenceUtils
 
 /**
  * ClassName: ReportEventHelper
  * Description: 归因事件上报
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name com.kkkl.cowieu.report
  * @date 2023/12/20 08:45
  */
@@ -33,12 +32,12 @@ object ReportEventHelper {
      * 事件上报 两个参数
      */
     private fun eventReport(key: String, code: String?) {
-        LogUtils.e("上报key：$key code：$code")
+        QualaLogUtils.e("上报key：$key code：$code")
         if (TextUtils.isEmpty(code)) {
             return
         }
         val adjustEvent = AdjustEvent(code)
-        LogUtils.e("上报 trackEvent：" + adjustEvent.eventToken)
+        QualaLogUtils.e("上报 trackEvent：" + adjustEvent.eventToken)
         Adjust.trackEvent(adjustEvent)
     }
 
@@ -78,11 +77,11 @@ object ReportEventHelper {
         //上报
         if (qualaListBeans.isNotEmpty()) {
             eventReport(QualaConstants.JOBS_SHOW_CARD)
-            if (!SPUtils.getJobsShowPtJob()) {
+            if (!SPreferenceUtils.getJobsShowPtJob()) {
                 for (bean in qualaListBeans) {
                     if ("c" == bean?.type) {
                         eventReport(QualaConstants.JOBS_SHOW_PTJOB)
-                        SPUtils.setJobsShowPtJob(true)
+                        SPreferenceUtils.setJobsShowPtJob(true)
                         break
                     }
                 }

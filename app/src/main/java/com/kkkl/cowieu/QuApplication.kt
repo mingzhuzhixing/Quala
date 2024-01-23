@@ -10,7 +10,7 @@ import com.kkkl.cowieu.helper.InitHelper
  * ClassName: QuApplication
  * Description: 主application
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu
  * @date 2023/12/19 10:43
  */

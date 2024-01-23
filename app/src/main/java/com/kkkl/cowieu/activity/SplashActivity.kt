@@ -14,12 +14,13 @@ import com.kkkl.cowieu.bean.QualaConfigBean
 import com.kkkl.cowieu.event.LoadAdjustEvent
 import com.kkkl.cowieu.helper.QualaConstants
 import com.kkkl.cowieu.quala_api.QualaApi
-import com.kkkl.cowieu.util.LogUtils
-import com.kkkl.cowieu.util.SPUtils
-import com.quala.network.http.HttpObserver
-import com.quala.network.http.HttpRequest
-import com.quala.network.http.HttpRetrofit
-import com.quala.network.http.HttpSchedulers
+import com.kkkl.cowieu.quala_network.QualaObserver
+import com.kkkl.cowieu.quala_network.QualaRequest
+import com.kkkl.cowieu.quala_network.QualaRetrofit
+import com.kkkl.cowieu.util.QualaLogUtils
+import com.kkkl.cowieu.util.SPreferenceUtils
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_splash.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -29,7 +30,7 @@ import org.greenrobot.eventbus.ThreadMode
  * ClassName: SplashActivity
  * Description: 开屏页
  *
- * @author jiaxiaochen
+ * @author zhaowei
  * @package_name  com.kkkl.cowieu.activity
  * @date 2023/12/20 10:21
  */
@@ -53,15 +54,15 @@ class SplashActivity : AppCompatActivity() {
             if (isDestroyed) {
                 return
             }
-            val grid = SPUtils.getGaid()
-            val adjust = SPUtils.getAdjustResult()
-            LogUtils.v("开始请求config接口 source:${event.type} gaid>>>>$grid<<<<adjuest>>>>$adjust")
+            val grid = SPreferenceUtils.getGaid()
+            val adjust = SPreferenceUtils.getAdjustResult()
+            QualaLogUtils.v("开始请求config接口 source:${event.type} gaid>>>>$grid<<<<adjuest>>>>$adjust")
             if (TextUtils.isEmpty(grid) || TextUtils.isEmpty(adjust)) {
                 return
             }
 
             //判断config数据
-            val configJson = SPUtils.getConfigJson()
+            val configJson = SPreferenceUtils.getConfigJson()
             if (configJson.isNullOrEmpty()) {
                 getConfigData(this)
             } else {
@@ -78,15 +79,16 @@ class SplashActivity : AppCompatActivity() {
      */
     private fun getConfigData(context: Context) {
         val json = JsonObject()
-        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPUtils.getAdjustResult())
-        json.addProperty(QualaConstants.KEY_GAID, SPUtils.getGaid())
-        HttpRetrofit.getInstance().create(QualaApi::class.java)
-            .getQualaConfig(HttpRequest.getRequestBody(json))
-            .compose(HttpSchedulers.applySchedulers())
-            .subscribe(object : HttpObserver<QualaConfigBean?>() {
+        json.addProperty(QualaConstants.KEY_ATTRIBUTES, SPreferenceUtils.getAdjustResult())
+        json.addProperty(QualaConstants.KEY_GAID, SPreferenceUtils.getGaid())
+        QualaRetrofit.getInstance().create(QualaApi::class.java)
+            .getQualaConfig(QualaRequest.getRequestBody(json))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(object : QualaObserver<QualaConfigBean?>() {
                 override fun onSuccess(data: QualaConfigBean?) {
-                    LogUtils.w("onSuccess config:" + Gson().toJson(data))
-                    SPUtils.setConfigJson(context, Gson().toJson(data))
+                    QualaLogUtils.w("onSuccess config:" + Gson().toJson(data))
+                    SPreferenceUtils.setConfigJson(context, Gson().toJson(data))
                     startMainActivity(500)
                 }
             })
